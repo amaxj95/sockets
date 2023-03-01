@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build server socket",
+            "type": "shell",
+            "command": "gcc",
+            "args" : [
+                "-g",
+                "-o",
+                "server_socket",
+                "server.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault" : true
+            }
+        }
+    ]
+
+}
