@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build client connection socket",
+            "type": "shell",
+            "command": "gcc",
+            "args" : [
+                "-g",
+                "-o",
+                "client_socket",
+                "client.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault" : true
+            }
+        }
+    ]
+
+}

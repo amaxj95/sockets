@@ -1,40 +1,46 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
-#include<unistd.h>
-
-//client socket for server communication
-short socketCreate(void){
-    short hSocket;
-    printf("Creating socket\n");
-    hSocket = socket(AF_INET, SOCK_STREAM, 0);
-    return hSocket;
-}
-
-//try to connect
-int socketConnect(int hSocket){
-    int iRetval=-1;
-    int ServerPort = 12345;
-
-    struct sockaddr_in remote = {0};
-    remote.sin_addr.s_addr = inet_addr("https://amaxj95-shiny-telegram-7rvx4g4xg7wcwqx7-12345.preview.app.github.dev/"); //127.0.0.1
-    remote.sin_family = AF_INET;
-    remote.sin_port = htons(ServerPort);
-
-    iRetval = connect(hSocket,(struct sockaddr *)&remote,sizeof(remote));
-    return iRetval;
-}
-
-int socketSend(int hSocket,char* Rqst, short lenRqst){
-    int shortRetval=-1;
-    struct timeval tv;
-    tv.tv_sec = 20;
-    tv.tv_usec = 0;
-
-    if(setsockopt(hSocket,SOL_SOCKET,SO_SNDTIMEO,(char *)&tv,sizof(tv)) < 0) {
-        printf("Time Out\n");
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#define PORT 12345
+  
+int main(int argc, char const* argv[])
+{
+    int status, valread, client_fd;
+    struct sockaddr_in serv_addr;
+    char* hello = "Hello from client";
+    char buffer[1024] = { 0 };
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
         return -1;
     }
+  
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+  
+    // Convert IPv4 and IPv6 addresses from text to binary
+    // form
+    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
+        <= 0) {
+        printf(
+            "\nInvalid address/ Address not supported \n");
+        return -1;
+    }
+  
+    if ((status
+         = connect(client_fd, (struct sockaddr*)&serv_addr,
+                   sizeof(serv_addr)))
+        < 0) {
+        printf("\nConnection Failed \n");
+        return -1;
+    }
+    send(client_fd, hello, strlen(hello), 0);
+    printf("Hello message sent\n");
+    valread = read(client_fd, buffer, 1024);
+    printf("%s\n", buffer);
+  
+    // closing the connected socket
+    close(client_fd);
+    return 0;
 }
